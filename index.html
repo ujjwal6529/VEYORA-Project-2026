@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#08172b">
-  <meta name="description" content="VEYORA helps citizens report civic issues, share local concerns and track progress toward better communities.">
+  <meta name="description" content="VEYORA helps citizens report civic issues and track their progress.">
   <meta name="color-scheme" content="light">
   <title>VEYORA — Your City. Your Voice.</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,686 +12,442 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
   <style>
-    :root{
-      --navy:#08172b;--navy-2:#102746;--blue:#2563eb;--blue-dark:#1749b5;
-      --cyan:#45c4d8;--ink:#14243b;--muted:#66758b;--bg:#f4f7fb;
-      --white:#fff;--line:#e3eaf3;--green:#087b52;--red:#b42318;
-      --shadow:0 18px 55px rgba(18,42,75,.09);--radius:22px;
-    }
-    *{box-sizing:border-box}
-    html{scroll-behavior:smooth;scroll-padding-top:90px}
-    body{margin:0;font-family:"DM Sans",Arial,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6}
-    body,button,input,select,textarea{font-family:"DM Sans",Arial,sans-serif}
-    button,a,input,select,textarea{-webkit-tap-highlight-color:transparent}
-    a{color:inherit}
-    button{cursor:pointer}
-    button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #70a5ff;outline-offset:3px}
-    .container{width:min(1160px,90%);margin-inline:auto}
-    .topbar{background:#061326;color:#c9d8ed;font-size:12px;padding:7px 0}
-    .topbar .container{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
-    .site-header{position:sticky;top:0;z-index:50;background:rgba(8,23,43,.96);backdrop-filter:blur(14px);border-bottom:1px solid rgba(255,255,255,.08)}
-    .nav-wrap{min-height:76px;display:flex;align-items:center;justify-content:space-between;gap:20px}
-    .brand{display:flex;align-items:center;gap:11px;text-decoration:none;color:white;min-width:0}
-    .brand img{width:43px;height:43px;object-fit:contain}
-    .brand-name{font:800 21px "Manrope",sans-serif;letter-spacing:3px}
-    .brand-tag{display:block;color:#a9c4e6;font-size:9px;letter-spacing:2px;margin-top:-3px}
-    .nav-links{display:flex;align-items:center;gap:24px}
-    .nav-links a{color:#dce8f7;text-decoration:none;font-size:13px;font-weight:600;transition:color .2s}
-    .nav-links a:hover{color:#70d5e5}
-    .nav-cta,.btn{border:0;border-radius:12px;padding:12px 18px;background:var(--blue);color:white;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:transform .2s,background .2s,box-shadow .2s}
-    .nav-cta:hover,.btn:hover{background:var(--blue-dark);transform:translateY(-2px);box-shadow:0 10px 24px #2563eb35}
-    .btn-light{background:white;color:var(--navy)}
-    .btn-light:hover{background:#eaf2ff;color:var(--navy)}
-    .btn-outline{background:transparent;border:1px solid #cbd8e8;color:var(--ink)}
-    .btn-outline:hover{background:#edf4ff;color:var(--navy)}
-    .menu-toggle{display:none;border:1px solid #35506f;background:#122b49;color:white;border-radius:11px;width:44px;height:42px;font-size:22px}
-    .hero{position:relative;overflow:hidden;color:white;padding:88px 0 78px;background:radial-gradient(ellipse at 82% 25%,#1d5c87 0,transparent 36%),radial-gradient(ellipse at 8% 90%,#143e72 0,transparent 38%),linear-gradient(125deg,#07162b,#0c294a 58%,#092039)}
-    .hero:after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.13;background-image:radial-gradient(#b9d9ff 1px,transparent 1px);background-size:26px 26px;mask-image:linear-gradient(to bottom,black,transparent)}
-    .hero-grid{position:relative;z-index:1;display:grid;grid-template-columns:1.12fr .88fr;align-items:center;gap:50px}
-    .eyebrow{display:inline-flex;align-items:center;gap:9px;border:1px solid #6c9ac355;background:#ffffff0d;color:#bfe9f4;border-radius:99px;padding:8px 13px;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase}
-    .eyebrow:before{content:"";width:7px;height:7px;background:#56d5bb;border-radius:50%;box-shadow:0 0 0 5px #56d5bb22}
-    h1,h2,h3{font-family:"Manrope",sans-serif}
-    .hero h1{font-size:clamp(38px,5.6vw,66px);line-height:1.08;letter-spacing:-2px;margin:22px 0 18px;max-width:720px}
-    .gradient-text{background:linear-gradient(90deg,#fff,#8ee2ed);-webkit-background-clip:text;background-clip:text;color:transparent}
-    .hero-copy{font-size:17px;color:#c8d9ed;max-width:580px;line-height:1.8;margin:0 0 27px}
-    .hero-actions{display:flex;gap:12px;flex-wrap:wrap}
-    .hero-note{font-size:12px;color:#a9c1dc;margin-top:18px}
-    .hero-panel{border:1px solid #ffffff25;background:linear-gradient(145deg,#ffffff18,#ffffff08);border-radius:26px;padding:22px;box-shadow:0 30px 70px #020b1b55;backdrop-filter:blur(12px)}
-    .panel-top{display:flex;justify-content:space-between;align-items:center;color:#d9e8f8;font-size:12px;margin-bottom:18px}
-    .live-dot{color:#7ee0bd;font-weight:700}
-    .live-dot:before{content:"";display:inline-block;width:7px;height:7px;background:#56d5a8;border-radius:50%;margin-right:7px}
-    .issue-row{display:flex;align-items:center;gap:13px;padding:14px 0;border-top:1px solid #ffffff18}
-    .issue-icon{width:42px;height:42px;display:grid;place-items:center;border-radius:13px;background:#ffffff17;font-size:20px;flex:none}
-    .issue-text{flex:1;min-width:0}
-    .issue-text strong{display:block;font-size:13px;color:white}
-    .issue-text span{font-size:11px;color:#afc4dc}
-    .issue-pill{font-size:10px;border-radius:99px;padding:5px 8px;background:#ffffff17;color:#c8e8ff;white-space:nowrap}
-    .panel-foot{border-top:1px solid #ffffff18;padding-top:15px;color:#b5c9df;font-size:11px}
-    .section{padding:78px 0}
-    .section-white{background:white}
-    .section-head{text-align:center;max-width:690px;margin:0 auto 38px}
-    .kicker{color:var(--blue);font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase}
-    .section-head h2{font-size:clamp(27px,4vw,39px);line-height:1.2;letter-spacing:-1px;margin:10px 0;color:var(--navy)}
-    .section-head p{color:var(--muted);margin:0;font-size:15px}
-    .feature-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:17px}
-    .feature-card{background:white;border:1px solid var(--line);border-radius:18px;padding:23px;transition:transform .22s,box-shadow .22s,border-color .22s}
-    .feature-card:hover{transform:translateY(-5px);box-shadow:var(--shadow);border-color:#c6d9f4}
-    .feature-icon{width:49px;height:49px;display:grid;place-items:center;border-radius:15px;background:#edf4ff;font-size:23px}
-    .feature-card h3{font-size:16px;margin:17px 0 7px;color:var(--navy)}
-    .feature-card p{font-size:13px;color:var(--muted);margin:0;line-height:1.7}
-    .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
-    .step{padding:25px;border-radius:18px;background:#f6f9fd;border:1px solid var(--line)}
-    .step-number{font:800 13px "Manrope";color:var(--blue);background:#e4efff;border-radius:10px;padding:8px 11px;display:inline-block}
-    .step h3{font-size:17px;margin:15px 0 7px}
-    .step p{color:var(--muted);font-size:13px;margin:0}
-    .form-section{background:linear-gradient(180deg,#f4f7fb,#edf3fa)}
-    .form-card{max-width:790px;margin:auto;background:white;border:1px solid var(--line);border-radius:24px;padding:clamp(20px,4vw,36px);box-shadow:var(--shadow)}
-    .form-card h3{margin:0 0 5px;font-size:21px;color:var(--navy)}
-    .form-intro{color:var(--muted);font-size:13px;margin:0 0 20px}
-    .field-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 16px}
-    .field{margin-bottom:15px}
-    label{display:block;font-size:12px;font-weight:700;color:#263b56;margin-bottom:7px}
-    .required{color:#d04444}
-    input,select,textarea{width:100%;border:1px solid #d5dfeb;background:#fff;border-radius:11px;padding:13px 14px;color:var(--ink);font-size:14px;min-height:47px;transition:border .2s,box-shadow .2s}
-    textarea{min-height:116px;resize:vertical}
-    input:focus,select:focus,textarea:focus{outline:0;border-color:#4c8be9;box-shadow:0 0 0 4px #2563eb17}
-    input::placeholder,textarea::placeholder{color:#9aa8b9}
-    .hint{font-size:11px;color:#7b899b;margin-top:6px}
-    .form-actions{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0}
-    .form-actions .btn{font-size:12px;padding:10px 13px}
-    .submit-btn{width:100%;margin-top:8px;min-height:50px}
-    .result{display:none;margin-top:17px;padding:14px 16px;border-radius:12px;font-size:13px;line-height:1.6;overflow-wrap:anywhere}
-    .result.info{display:block;background:#eef5ff;color:#174b8b}
-    .result.success{display:block;background:#eaf8f1;color:#08734c}
-    .result.error{display:block;background:#fff0ef;color:#a52c24}
-    .preview{display:none;max-width:160px;max-height:130px;object-fit:cover;border-radius:12px;margin-top:10px;border:1px solid var(--line)}
-    .account-card{max-width:650px}
-    .account-actions{display:flex;gap:10px;flex-wrap:wrap}
-    .account-actions .btn{flex:1}
-    .map-frame{width:100%;height:290px;border:0;border-radius:14px;margin-top:14px}
-    .map-placeholder{background:#f1f5fa;border:1px dashed #c8d5e5;border-radius:14px;padding:25px;text-align:center;color:var(--muted);font-size:13px}
-    .track-result{margin-top:15px;padding:17px;border-radius:13px;background:#f4f8fd;border:1px solid var(--line)}
-    .track-result h4{margin:0 0 10px;color:var(--navy);font:700 15px "Manrope"}
-    .track-result p{margin:6px 0;color:#53647a;font-size:13px}
-    .status{display:inline-flex;padding:4px 10px;border-radius:99px;background:#fff1cc;color:#805600;font-size:11px;font-weight:800}
-    .status.resolved{background:#ddf7e9;color:#08734c}
-    .status.progress{background:#e3efff;color:#1c55a4}
-    .status.submitted{background:#fff1cc;color:#805600}
-    .admin-note{border:1px solid #f0dfb8;background:#fffaf0;border-radius:14px;padding:16px;color:#75551b;font-size:13px}
-    .about-band{background:var(--navy);color:white;border-radius:24px;padding:34px;display:grid;grid-template-columns:1fr auto;align-items:center;gap:20px}
-    .about-band h2{font-size:25px;margin:0 0 7px}
-    .about-band p{color:#c1d1e5;font-size:13px;margin:0;max-width:650px}
-    footer{background:#061326;color:#afc1d8;padding:40px 0 22px}
-    .footer-grid{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:30px}
-    footer h3{color:white;font-size:14px;margin:0 0 12px}
-    footer p,footer a{font-size:12px;color:#afc1d8;text-decoration:none}
-    footer a:hover{color:#fff}
-    .footer-brand{font:800 20px "Manrope";letter-spacing:3px;color:white}
-    .copyright{border-top:1px solid #ffffff18;margin-top:28px;padding-top:17px;text-align:center;font-size:11px}
-    .small-muted{font-size:11px;color:#8393a8}
-    .hidden{display:none!important}
-    .reveal{opacity:0;transform:translateY(18px);transition:opacity .55s ease,transform .55s ease}
-    .reveal.visible{opacity:1;transform:none}
-    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-    @media(max-width:900px){
-      .nav-links{gap:14px}.nav-links a{font-size:12px}
-      .hero-grid{gap:28px}.feature-grid{grid-template-columns:repeat(2,1fr)}
-    }
-    @media(max-width:680px){
-      .topbar .container{justify-content:center;text-align:center}
-      .nav-wrap{min-height:68px}.brand img{width:38px;height:38px}.brand-name{font-size:19px}
-      .menu-toggle{display:block}
-      .nav-links{display:none;position:absolute;left:0;right:0;top:68px;background:#0a1c34;padding:14px 5% 20px;flex-direction:column;align-items:stretch;gap:0;border-top:1px solid #ffffff16;box-shadow:0 18px 25px #06132655}
-      .nav-links.open{display:flex}
-      .nav-links a{padding:12px 5px;border-bottom:1px solid #ffffff12;font-size:14px}
-      .nav-links .nav-cta{margin-top:12px;text-align:center}
-      .hero{padding:62px 0 55px}
-      .hero-grid{grid-template-columns:1fr;gap:35px}
-      .hero h1{letter-spacing:-1.4px}
-      .hero-copy{font-size:15px}
-      .hero-panel{padding:17px}
-      .section{padding:58px 0}
-      .feature-grid{gap:12px}
-      .feature-card{padding:17px}
-      .feature-card h3{font-size:14px}
-      .feature-card p{font-size:12px}
-      .steps{grid-template-columns:1fr;gap:12px}
-      .field-grid{grid-template-columns:1fr}
-      .form-card{border-radius:18px}
-      .about-band{grid-template-columns:1fr;padding:25px}
-      .footer-grid{grid-template-columns:1fr;gap:18px}
-    }
-    @media(max-width:380px){
-      .container{width:92%}.hero-actions{flex-direction:column}.hero-actions .btn{width:100%}
-      .feature-grid{grid-template-columns:1fr}
-      .issue-pill{display:none}
-    }
-    @media(prefers-reduced-motion:reduce){
-      *,*:before,*:after{scroll-behavior:auto!important;animation-duration:.01ms!important;transition-duration:.01ms!important}
-      .reveal{opacity:1;transform:none}
-    }
+    :root{--navy:#08172b;--navy2:#102746;--blue:#2563eb;--blue2:#1749b5;--cyan:#45c4d8;--ink:#14243b;--muted:#66758b;--bg:#f4f7fb;--white:#fff;--line:#e3eaf3;--green:#087b52;--red:#b42318;--shadow:0 18px 55px rgba(18,42,75,.09)}
+    *{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:90px}body{margin:0;font-family:"DM Sans",Arial,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6}button,input,select,textarea{font:inherit}button,a,input,select,textarea{-webkit-tap-highlight-color:transparent}a{color:inherit}button{cursor:pointer}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #70a5ff;outline-offset:3px}.container{width:min(1160px,90%);margin:auto}
+    .topbar{background:#061326;color:#c9d8ed;font-size:12px;padding:7px 0}.topbar .container{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+    header{position:sticky;top:0;z-index:50;background:rgba(8,23,43,.97);backdrop-filter:blur(14px);border-bottom:1px solid #ffffff18}.nav{min-height:76px;display:flex;align-items:center;justify-content:space-between;gap:20px}.brand{display:flex;align-items:center;gap:11px;text-decoration:none;color:white}.brand img{width:43px;height:43px;object-fit:contain}.brand-name{font:800 21px Manrope,sans-serif;letter-spacing:3px}.brand-tag{display:block;color:#a9c4e6;font-size:9px;letter-spacing:2px;margin-top:-3px}.links{display:flex;align-items:center;gap:20px}.links a{color:#dce8f7;text-decoration:none;font-size:13px;font-weight:600}.links a:hover{color:#70d5e5}.menu{display:none;border:1px solid #35506f;background:#122b49;color:white;border-radius:11px;width:44px;height:42px;font-size:22px}
+    .btn{border:0;border-radius:12px;padding:12px 18px;background:var(--blue);color:white;font-weight:700;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:.2s}.btn:hover{background:var(--blue2);transform:translateY(-2px);box-shadow:0 10px 24px #2563eb35}.light{background:white;color:var(--navy)}.outline{background:transparent;border:1px solid #cbd8e8;color:var(--ink)}.btn:disabled{opacity:.65;cursor:not-allowed;transform:none;box-shadow:none}
+    .hero{position:relative;overflow:hidden;color:white;padding:85px 0 75px;background:radial-gradient(ellipse at 82% 25%,#1d5c87 0,transparent 36%),radial-gradient(ellipse at 8% 90%,#143e72 0,transparent 38%),linear-gradient(125deg,#07162b,#0c294a 58%,#092039)}.hero-grid{display:grid;grid-template-columns:1.12fr .88fr;align-items:center;gap:50px}.eyebrow,.kicker{font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase}.eyebrow{display:inline-flex;border:1px solid #6c9ac355;background:#ffffff0d;color:#bfe9f4;border-radius:99px;padding:8px 13px}.hero h1{font:800 clamp(38px,5.6vw,66px)/1.08 Manrope,sans-serif;letter-spacing:-2px;margin:22px 0 18px}.gradient{background:linear-gradient(90deg,#fff,#8ee2ed);-webkit-background-clip:text;background-clip:text;color:transparent}.hero-copy{font-size:17px;color:#c8d9ed;max-width:580px;line-height:1.8;margin:0 0 27px}.actions{display:flex;gap:12px;flex-wrap:wrap}.note{font-size:12px;color:#a9c1dc;margin-top:18px}.panel{border:1px solid #ffffff25;background:linear-gradient(145deg,#ffffff18,#ffffff08);border-radius:26px;padding:22px;box-shadow:0 30px 70px #020b1b55}.panel-top{display:flex;justify-content:space-between;color:#d9e8f8;font-size:12px;margin-bottom:18px}.issue{display:flex;align-items:center;gap:13px;padding:14px 0;border-top:1px solid #ffffff18}.issue-icon{width:42px;height:42px;display:grid;place-items:center;border-radius:13px;background:#ffffff17;font-size:20px}.issue-text{flex:1}.issue-text strong{display:block;font-size:13px}.issue-text span{font-size:11px;color:#afc4dc}.panel-foot{border-top:1px solid #ffffff18;padding-top:15px;color:#b5c9df;font-size:11px}
+    .section{padding:72px 0}.white{background:white}.head{text-align:center;max-width:690px;margin:0 auto 38px}.kicker{color:var(--blue)}.head h2{font:800 clamp(27px,4vw,39px)/1.2 Manrope,sans-serif;letter-spacing:-1px;margin:10px 0;color:var(--navy)}.head p{color:var(--muted);margin:0;font-size:15px}.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:17px}.card,.form-card{background:white;border:1px solid var(--line);border-radius:18px;padding:23px;transition:.2s}.card:hover{transform:translateY(-5px);box-shadow:var(--shadow)}.feature-icon{width:49px;height:49px;display:grid;place-items:center;border-radius:15px;background:#edf4ff;font-size:23px}.card h3{font:700 16px Manrope,sans-serif;margin:17px 0 7px;color:var(--navy)}.card p{font-size:13px;color:var(--muted);margin:0}.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}.step{padding:25px;border-radius:18px;background:#f6f9fd;border:1px solid var(--line)}.step b{color:var(--blue);background:#e4efff;border-radius:10px;padding:8px 11px;font-size:13px}.step h3{font:700 17px Manrope,sans-serif;margin:15px 0 7px}.step p{color:var(--muted);font-size:13px;margin:0}
+    .form-section{background:linear-gradient(180deg,#f4f7fb,#edf3fa)}.form-card{max-width:790px;margin:auto;padding:clamp(20px,4vw,36px);box-shadow:var(--shadow)}.form-card h3{margin:0 0 5px;font:700 21px Manrope,sans-serif;color:var(--navy)}.intro{color:var(--muted);font-size:13px;margin:0 0 20px}.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:0 16px}.field{margin-bottom:15px}label{display:block;font-size:12px;font-weight:700;color:#263b56;margin-bottom:7px}.required{color:#d04444}input,select,textarea{width:100%;border:1px solid #d5dfeb;background:white;border-radius:11px;padding:13px 14px;color:var(--ink);font-size:14px;min-height:47px}textarea{min-height:116px;resize:vertical}input:focus,select:focus,textarea:focus{outline:0;border-color:#4c8be9;box-shadow:0 0 0 4px #2563eb17}.hint{font-size:11px;color:#7b899b;margin-top:6px}.form-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:10px 0}.form-actions .btn{font-size:12px;padding:10px 13px}.submit{width:100%;margin-top:8px;min-height:50px}.result{display:none;margin-top:17px;padding:14px 16px;border-radius:12px;font-size:13px;line-height:1.6;overflow-wrap:anywhere}.result.info{display:block;background:#eef5ff;color:#174b8b}.result.success{display:block;background:#eaf8f1;color:#08734c}.result.error{display:block;background:#fff0ef;color:#a52c24}.preview{display:none;max-width:160px;max-height:130px;object-fit:cover;border-radius:12px;margin-top:10px;border:1px solid var(--line)}.account{max-width:650px}.account-actions{display:flex;gap:10px;flex-wrap:wrap}.account-actions .btn{flex:1}.hidden{display:none!important}.track-result{margin-top:15px;padding:17px;border-radius:13px;background:#f4f8fd;border:1px solid var(--line)}.track-result h4{margin:0 0 10px;color:var(--navy);font:700 15px Manrope}.track-result p{margin:6px 0;color:#53647a;font-size:13px}.status{display:inline-flex;padding:4px 10px;border-radius:99px;background:#fff1cc;color:#805600;font-size:11px;font-weight:800}.status.resolved{background:#ddf7e9;color:#08734c}.status.progress{background:#e3efff;color:#1c55a4}.map-frame{width:100%;height:290px;border:0;border-radius:14px;margin-top:14px}.map-placeholder{background:#f1f5fa;border:1px dashed #c8d5e5;border-radius:14px;padding:25px;text-align:center;color:var(--muted);font-size:13px}.admin-note{border:1px solid #f0dfb8;background:#fffaf0;border-radius:14px;padding:16px;color:#75551b;font-size:13px}.about-band{background:var(--navy);color:white;border-radius:24px;padding:34px;display:grid;grid-template-columns:1fr auto;align-items:center;gap:20px}.about-band h2{font:800 25px Manrope;margin:0 0 7px}.about-band p{color:#c1d1e5;font-size:13px;margin:0;max-width:650px}footer{background:#061326;color:#afc1d8;padding:40px 0 22px}.footer-grid{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:30px}footer h3{color:white;font:700 14px Manrope}footer p,footer a{font-size:12px;color:#afc1d8;text-decoration:none}.footer-brand{font:800 20px Manrope;letter-spacing:3px;color:white}.copyright{border-top:1px solid #ffffff18;margin-top:28px;padding-top:17px;text-align:center;font-size:11px}
+    @media(max-width:900px){.links{gap:12px}.links a{font-size:12px}.hero-grid{gap:28px}.grid4{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:680px){.topbar .container{justify-content:center;text-align:center}.nav{min-height:68px}.brand img{width:38px;height:38px}.brand-name{font-size:19px}.menu{display:block}.links{display:none;position:absolute;left:0;right:0;top:68px;background:#0a1c34;padding:14px 5% 20px;flex-direction:column;align-items:stretch;gap:0}.links.open{display:flex}.links a{padding:12px 5px;border-bottom:1px solid #ffffff12;font-size:14px}.hero{padding:58px 0 52px}.hero-grid{grid-template-columns:1fr;gap:32px}.hero-copy{font-size:15px}.section{padding:55px 0}.steps,.field-grid{grid-template-columns:1fr}.about-band{grid-template-columns:1fr;padding:25px}.footer-grid{grid-template-columns:1fr;gap:18px}}
+    @media(max-width:380px){.container{width:92%}.actions{flex-direction:column}.actions .btn{width:100%}.grid4{grid-template-columns:1fr}}
+    @media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition-duration:.01ms!important}}
   </style>
 </head>
 <body>
   <div class="topbar"><div class="container"><span>Citizen-powered civic reporting</span><span>Building better communities, together</span></div></div>
-  <header class="site-header">
-    <div class="container nav-wrap">
-      <a class="brand" href="#home" aria-label="VEYORA home">
-        <img src="Veyora-logo.png" alt="VEYORA logo">
-        <span><span class="brand-name">VEYORA</span><span class="brand-tag">SMART CITY PLATFORM</span></span>
-      </a>
-      <button class="menu-toggle" id="menuToggle" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-controls="navLinks">☰</button>
-      <nav class="nav-links" id="navLinks" aria-label="Main navigation">
-        <a href="#home">Home</a><a href="#features">Services</a><a href="#how">How it works</a>
-        <a href="#account">Account</a><a href="#report">Report</a><a href="#track">Track</a>
-        <a href="#admin">Admin</a><a class="nav-cta" href="#report">Report an issue ↗</a>
-      </nav>
-    </div>
-  </header>
-
+  <header><div class="container nav">
+    <a class="brand" href="#home" aria-label="VEYORA home"><img src="Veyora-logo.png" alt="VEYORA logo"><span><span class="brand-name">VEYORA</span><span class="brand-tag">SMART CITY PLATFORM</span></span></a>
+    <button class="menu" id="menuToggle" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-controls="navLinks">☰</button>
+    <nav class="links" id="navLinks" aria-label="Main navigation"><a href="#home">Home</a><a href="#features">Services</a><a href="#how">How it works</a><a href="#account">Account</a><a href="#report">Report</a><a href="#track">Track</a><a href="#admin">Admin</a><a class="btn" href="#report">Report an issue ↗</a></nav>
+  </div></header>
   <main>
-    <section class="hero" id="home">
-      <div class="container hero-grid">
-        <div>
-          <span class="eyebrow">Your city. Your voice. Your future.</span>
-          <h1>Small actions.<br><span class="gradient-text">Better cities.</span></h1>
-          <p class="hero-copy">See a civic problem in your neighbourhood? Report it, share the details and keep track of its progress. A better community begins when every voice is heard.</p>
-          <div class="hero-actions">
-            <a class="btn" href="#report">＋ Report a problem</a>
-            <a class="btn btn-light" href="#track">Track a complaint →</a>
-          </div>
-          <p class="hero-note">A simple platform concept for transparent, citizen-focused civic reporting.</p>
-        </div>
-        <aside class="hero-panel" aria-label="Examples of civic issues">
-          <div class="panel-top"><strong>COMMUNITY PRIORITIES</strong><span class="live-dot">Citizen focused</span></div>
-          <div class="issue-row"><div class="issue-icon">🛣️</div><div class="issue-text"><strong>Safer roads</strong><span>Road damage and potholes</span></div><span class="issue-pill">Roads</span></div>
-          <div class="issue-row"><div class="issue-icon">💡</div><div class="issue-text"><strong>Brighter streets</strong><span>Streetlight maintenance</span></div><span class="issue-pill">Lighting</span></div>
-          <div class="issue-row"><div class="issue-icon">🚰</div><div class="issue-text"><strong>Reliable water</strong><span>Leaks and supply concerns</span></div><span class="issue-pill">Water</span></div>
-          <div class="issue-row"><div class="issue-icon">🗑️</div><div class="issue-text"><strong>Cleaner localities</strong><span>Waste and sanitation</span></div><span class="issue-pill">Cleanliness</span></div>
-          <div class="panel-foot">VEYORA helps organise reports. Resolution depends on the responsible civic authority.</div>
-        </aside>
-      </div>
-    </section>
-
-    <section class="section section-white" id="features">
-      <div class="container">
-        <div class="section-head"><span class="kicker">What you can report</span><h2>Make your neighbourhood better</h2><p>Choose a category and share clear information about a civic issue in your area.</p></div>
-        <div class="feature-grid">
-          <article class="feature-card"><div class="feature-icon">🛣️</div><h3>Road & footpath</h3><p>Report potholes, damaged roads and unsafe footpaths.</p></article>
-          <article class="feature-card"><div class="feature-icon">🗑️</div><h3>Waste & sanitation</h3><p>Flag garbage accumulation and sanitation concerns.</p></article>
-          <article class="feature-card"><div class="feature-icon">💡</div><h3>Street lighting</h3><p>Share locations of damaged or non-working streetlights.</p></article>
-          <article class="feature-card"><div class="feature-icon">🚰</div><h3>Water & drainage</h3><p>Report water leakage, supply issues and drainage problems.</p></article>
-        </div>
-      </div>
-    </section>
-
-    <section class="section" id="how">
-      <div class="container">
-        <div class="section-head"><span class="kicker">Simple process</span><h2>From report to follow-up</h2><p>Three straightforward steps help citizens submit and follow a civic report.</p></div>
-        <div class="steps">
-          <article class="step"><span class="step-number">01 / REPORT</span><h3>Describe the issue</h3><p>Choose a category, enter the location and explain what needs attention. Add a relevant photo if available.</p></article>
-          <article class="step"><span class="step-number">02 / SAVE ID</span><h3>Keep your tracking ID</h3><p>After a successful submission, save the unique ID shown on screen so you can look up the report later.</p></article>
-          <article class="step"><span class="step-number">03 / FOLLOW UP</span><h3>Check the status</h3><p>Use the tracking section to check the latest status made available by the platform.</p></article>
-        </div>
-      </div>
-    </section>
-
-    <section class="section section-white" id="account">
-      <div class="container">
-        <div class="section-head"><span class="kicker">Your account</span><h2>Sign in to VEYORA</h2><p>Create an account or sign in using your email address.</p></div>
-        <div class="form-card account-card">
-          <div id="loggedOut">
-            <div class="field-grid">
-              <div class="field"><label for="email">Email address</label><input id="email" type="email" autocomplete="email" placeholder="you@example.com" maxlength="254"></div>
-              <div class="field"><label for="password">Password</label><input id="password" type="password" autocomplete="current-password" minlength="6" placeholder="At least 6 characters"></div>
-            </div>
-            <div class="account-actions"><button class="btn" id="signupButton" type="button">Create account</button><button class="btn btn-outline" id="loginButton" type="button">Sign in</button></div>
-          </div>
-          <div id="loggedIn" class="hidden"><p id="welcome" aria-live="polite"></p><button class="btn btn-outline" id="logoutButton" type="button">Sign out</button></div>
-          <p class="hint">Email confirmation may be required. Never share your password or use a password you use on another service.</p>
-          <div id="accountMessage" class="result" role="status" aria-live="polite"></div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section form-section" id="report">
-      <div class="container">
-        <div class="section-head"><span class="kicker">Raise your voice</span><h2>Report a civic problem</h2><p>Provide accurate details so the issue can be understood and followed up.</p></div>
-        <div class="form-card">
-          <h3>Complaint details</h3><p class="form-intro">Fields marked with * are required.</p>
-          <form id="reportForm">
-            <div class="field-grid">
-              <div class="field"><label for="person">Your name <span class="required">*</span></label><input id="person" required minlength="2" maxlength="100" autocomplete="name" placeholder="Enter your name"></div>
-              <div class="field"><label for="mobile">Mobile number <span class="required">*</span></label><input id="mobile" type="tel" inputmode="numeric" required maxlength="10" pattern="[0-9]{10}" autocomplete="tel" placeholder="10-digit mobile number"></div>
-            </div>
-            <div class="field"><label for="category">Problem category <span class="required">*</span></label><select id="category" required><option value="">Select a category</option><option>Road Problems</option><option>Garbage Issues</option><option>Street Lights</option><option>Water Problems</option><option>Drainage</option><option>Other</option></select></div>
-            <div class="field"><label for="address">Location / address <span class="required">*</span></label><input id="address" required minlength="2" maxlength="300" autocomplete="street-address" placeholder="Area, street or nearby landmark"></div>
-            <div class="form-actions"><button class="btn btn-outline" type="button" id="locationButton">📍 Use my location</button><span class="hint" id="locationText">GPS is optional. You can enter the address manually.</span></div>
-            <div class="field"><label for="description">Describe the problem <span class="required">*</span></label><textarea id="description" required minlength="5" maxlength="2000" placeholder="What is the issue, and where exactly can it be found?"></textarea><p class="hint">Avoid including sensitive personal information in your description.</p></div>
-            <div class="field"><label for="photo">Attach a photo (optional)</label><input id="photo" type="file" accept="image/jpeg,image/png,image/webp"><img id="preview" class="preview" alt="Selected complaint photo preview"><p class="hint">JPG, PNG or WEBP. Maximum file size: 1.5 MB.</p></div>
-            <button class="btn submit-btn" id="submitButton" type="submit">Submit complaint <span aria-hidden="true">→</span></button>
-          </form>
-          <div id="reportResult" class="result" role="status" aria-live="polite"></div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section section-white" id="track">
-      <div class="container">
-        <div class="section-head"><span class="kicker">Stay informed</span><h2>Track your complaint</h2><p>Enter the tracking ID you received after a successful submission.</p></div>
-        <div class="form-card">
-          <div class="field"><label for="trackingId">Complaint tracking ID</label><input id="trackingId" autocomplete="off" maxlength="12" placeholder="Example: VEY-AB23CD45"></div>
-          <button class="btn" id="trackButton" type="button">Check status →</button>
-          <div id="trackingResult" class="result" role="status" aria-live="polite"></div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section" id="map">
-      <div class="container">
-        <div class="section-head"><span class="kicker">Location preview</span><h2>Know the reported area</h2><p>If you choose GPS while reporting, you can preview the selected coordinates here.</p></div>
-        <div class="form-card">
-          <div id="mapMessage" class="map-placeholder">📍 No GPS location selected yet.</div>
-          <iframe id="mapFrame" class="map-frame hidden" title="Selected complaint location map" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-        </div>
-      </div>
-    </section>
-
-    <section class="section section-white" id="admin">
-      <div class="container">
-        <div class="section-head"><span class="kicker">For authorised staff</span><h2>Admin workspace</h2><p>Complaint management must be protected by verified staff roles and database policies.</p></div>
-        <div class="form-card"><div class="admin-note"><strong>Admin access is not enabled.</strong><br>This project currently has no verified admin-role workflow in the supplied code. We will only activate this area after configuring server-side role checks and database permissions. Do not expose complaint records or personal details through a public admin page.</div></div>
-      </div>
-    </section>
-
-    <section class="section" id="about">
-      <div class="container">
-        <div class="about-band"><div><h2>Better communities begin with participation.</h2><p>VEYORA is a citizen-focused civic reporting concept designed to make it easier to raise local concerns and follow their progress.</p></div><a class="btn btn-light" href="#report">Share a concern ↗</a></div>
-      </div>
-    </section>
+    <section class="hero" id="home"><div class="container hero-grid"><div>
+      <span class="eyebrow">Your city. Your voice. Your future.</span><h1>Small actions.<br><span class="gradient">Better cities.</span></h1>
+      <p class="hero-copy">See a civic problem in your neighbourhood? Report it, share the details and keep track of its progress. A better community begins when every voice is heard.</p>
+      <div class="actions"><a class="btn" href="#report">＋ Report a problem</a><a class="btn light" href="#track">Track a complaint →</a></div><p class="note">A simple platform concept for transparent, citizen-focused civic reporting.</p>
+    </div><aside class="panel"><div class="panel-top"><strong>COMMUNITY PRIORITIES</strong><span>● Citizen focused</span></div>
+      <div class="issue"><div class="issue-icon">🛣️</div><div class="issue-text"><strong>Safer roads</strong><span>Road damage and potholes</span></div></div>
+      <div class="issue"><div class="issue-icon">💡</div><div class="issue-text"><strong>Brighter streets</strong><span>Streetlight maintenance</span></div></div>
+      <div class="issue"><div class="issue-icon">🚰</div><div class="issue-text"><strong>Reliable water</strong><span>Leaks and supply concerns</span></div></div>
+      <div class="issue"><div class="issue-icon">🗑️</div><div class="issue-text"><strong>Cleaner localities</strong><span>Waste and sanitation</span></div></div>
+      <div class="panel-foot">VEYORA helps organise reports. Resolution depends on the responsible civic authority.</div>
+    </aside></div></section>
+    <section class="section white" id="features"><div class="container"><div class="head"><span class="kicker">What you can report</span><h2>Make your neighbourhood better</h2><p>Choose a category and share clear information about a civic issue in your area.</p></div><div class="grid4">
+      <article class="card"><div class="feature-icon">🛣️</div><h3>Road & footpath</h3><p>Report potholes, damaged roads and unsafe footpaths.</p></article>
+      <article class="card"><div class="feature-icon">🗑️</div><h3>Waste & sanitation</h3><p>Flag garbage accumulation and sanitation concerns.</p></article>
+      <article class="card"><div class="feature-icon">💡</div><h3>Street lighting</h3><p>Share locations of damaged or non-working streetlights.</p></article>
+      <article class="card"><div class="feature-icon">🚰</div><h3>Water & drainage</h3><p>Report water leakage, supply issues and drainage problems.</p></article>
+    </div></div></section>
+    <section class="section" id="how"><div class="container"><div class="head"><span class="kicker">Simple process</span><h2>From report to follow-up</h2><p>Three straightforward steps help citizens submit and follow a civic report.</p></div><div class="steps">
+      <article class="step"><b>01 / REPORT</b><h3>Describe the issue</h3><p>Choose a category, enter the location and explain what needs attention. Add a relevant photo if available.</p></article>
+      <article class="step"><b>02 / SAVE ID</b><h3>Keep your tracking ID</h3><p>After a successful submission, save the unique ID shown on screen so you can look up the report later.</p></article>
+      <article class="step"><b>03 / FOLLOW UP</b><h3>Check the status</h3><p>Use the tracking section to check the latest status made available by the platform.</p></article>
+    </div></div></section>
+    <section class="section white" id="account"><div class="container"><div class="head"><span class="kicker">Your account</span><h2>Sign in to VEYORA</h2><p>Create an account or sign in using your email address.</p></div><div class="form-card account">
+      <div id="loggedOut"><div class="field-grid"><div class="field"><label for="email">Email address</label><input id="email" type="email" autocomplete="email" placeholder="you@example.com" maxlength="254"></div><div class="field"><label for="password">Password</label><input id="password" type="password" autocomplete="current-password" minlength="6" placeholder="At least 6 characters"></div></div><div class="account-actions"><button class="btn" id="signupButton" type="button">Create account</button><button class="btn outline" id="loginButton" type="button">Sign in</button></div></div>
+      <div id="loggedIn" class="hidden"><p id="welcome" aria-live="polite"></p><button class="btn outline" id="logoutButton" type="button">Sign out</button></div>
+      <p class="hint">Email confirmation may be required. Never share your password or reuse a password from another service.</p><div id="accountMessage" class="result" role="status" aria-live="polite"></div>
+    </div></div></section>
+    <section class="section form-section" id="report"><div class="container"><div class="head"><span class="kicker">Raise your voice</span><h2>Report a civic problem</h2><p>Provide accurate details so the issue can be understood and followed up.</p></div><div class="form-card">
+      <h3>Complaint details</h3><p class="intro">Fields marked with * are required.</p>
+      <form id="reportForm">
+        <div class="field-grid"><div class="field"><label for="person">Your name <span class="required">*</span></label><input id="person" required minlength="2" maxlength="100" autocomplete="name" placeholder="Enter your name"></div><div class="field"><label for="mobile">Mobile number <span class="required">*</span></label><input id="mobile" type="tel" inputmode="numeric" required maxlength="10" pattern="[0-9]{10}" autocomplete="tel" placeholder="10-digit mobile number"></div></div>
+        <div class="field"><label for="category">Problem category <span class="required">*</span></label><select id="category" required><option value="">Select a category</option><option>Road Problems</option><option>Garbage Issues</option><option>Street Lights</option><option>Water Problems</option><option>Drainage</option><option>Other</option></select></div>
+        <div class="field"><label for="address">Location / address <span class="required">*</span></label><input id="address" required minlength="2" maxlength="300" autocomplete="street-address" placeholder="Area, street or nearby landmark"></div>
+        <div class="form-actions"><button class="btn outline" type="button" id="locationButton">📍 Use my location</button><span class="hint" id="locationText">GPS is optional. You can enter the address manually.</span></div>
+        <div class="field"><label for="description">Describe the problem <span class="required">*</span></label><textarea id="description" required minlength="5" maxlength="2000" placeholder="What is the issue, and where exactly can it be found?"></textarea><p class="hint">Avoid including sensitive personal information.</p></div>
+        <div class="field"><label for="photo">Attach a photo (optional)</label><input id="photo" type="file" accept="image/jpeg,image/png,image/webp"><img id="preview" class="preview" alt="Selected complaint photo preview"><p class="hint">JPG, PNG or WEBP. Maximum file size: 1.5 MB.</p></div>
+        <button class="btn submit" id="submitButton" type="submit">Submit complaint →</button>
+      </form><div id="reportResult" class="result" role="status" aria-live="polite"></div>
+    </div></div></section>
+    <section class="section white" id="track"><div class="container"><div class="head"><span class="kicker">Stay informed</span><h2>Track your complaint</h2><p>Enter the tracking ID you received after a successful submission.</p></div><div class="form-card">
+      <div class="field"><label for="trackingId">Complaint tracking ID</label><input id="trackingId" autocomplete="off" maxlength="12" placeholder="Example: VEY-AB23CD45"></div><button class="btn" id="trackButton" type="button">Check status →</button><div id="trackingResult" class="result" role="status" aria-live="polite"></div>
+    </div></div></section>
+    <section class="section" id="map"><div class="container"><div class="head"><span class="kicker">Location preview</span><h2>Know the reported area</h2><p>If you choose GPS while reporting, you can preview the selected coordinates here.</p></div><div class="form-card"><div id="mapMessage" class="map-placeholder">📍 No GPS location selected yet.</div><iframe id="mapFrame" class="map-frame hidden" title="Selected complaint location map" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div></div></section>
+    <section class="section white" id="admin"><div class="container"><div class="head"><span class="kicker">For authorised staff</span><h2>Admin workspace</h2><p>Complaint management is restricted to verified staff roles.</p></div><div class="form-card"><div class="admin-note"><strong>Admin access is not enabled.</strong><br>This project does not yet include a verified admin-role workflow. Enable it only after server-side role checks and database permissions are configured. Never expose all complaint records on a public page.</div></div></div></section>
+    <section class="section" id="about"><div class="container"><div class="about-band"><div><h2>Better communities begin with participation.</h2><p>VEYORA is a citizen-focused civic reporting concept designed to make it easier to raise local concerns and follow their progress.</p></div><a class="btn light" href="#report">Share a concern ↗</a></div></div></section>
   </main>
+  <footer><div class="container"><div class="footer-grid"><div><div class="footer-brand">VEYORA</div><p>Your City. Your Voice. Your Future.</p><p>A citizen-focused smart city reporting platform concept.</p></div><div><h3>Explore</h3><p><a href="#features">Services</a></p><p><a href="#how">How it works</a></p><p><a href="#report">Report a problem</a></p></div><div><h3>Contact</h3><p>Founder: Ujjwal Tiwari</p><p><a href="mailto:officialujjwal0007@gmail.com">officialujjwal0007@gmail.com</a></p></div></div><div class="copyright">© 2026 VEYORA. All rights reserved.</div></div></footer>
+<script>
+"use strict";
 
-  <footer>
-    <div class="container">
-      <div class="footer-grid">
-        <div><div class="footer-brand">VEYORA</div><p>Your City. Your Voice. Your Future.</p><p class="small-muted">A citizen-focused smart city reporting platform concept.</p></div>
-        <div><h3>Explore</h3><p><a href="#features">Services</a></p><p><a href="#how">How it works</a></p><p><a href="#report">Report a problem</a></p></div>
-        <div><h3>Contact</h3><p>Founder: Ujjwal Tiwari</p><p><a href="mailto:officialujjwal0007@gmail.com">officialujjwal0007@gmail.com</a></p></div>
-      </div>
-      <div class="copyright">© 2026 VEYORA. All rights reserved.</div>
-    </div>
-  </footer>
+/*
+  IMPORTANT:
+  The Supabase publishable/anon key is intended for browser use, but it is NOT
+  authorization. Configure Row Level Security (RLS), Storage policies and the
+  track_report RPC in Supabase before deploying this app publicly.
+*/
+const SUPABASE_URL = "https://oikkaisptvrhpvxuzeja.supabase.co";
+const SUPABASE_KEY = "sb_publishable_m-7cmnw_iS864dJMzaQosA_98l2dmfO";
 
-  <script>
-  "use strict";
+const $ = id => document.getElementById(id);
+let supabaseClient = null;
+let selectedLocation = null;
+let selectedPhoto = null;
+let previewUrl = null;
 
-  // Keep the existing Supabase project and database contracts.
-  const SUPABASE_URL = "https://oikkaisptvrhpvxuzeja.supabase.co";
-  const SUPABASE_KEY = "sb_publishable_m-7cmnw_iS864dJMzaQosA_98l2dmfO";
-
-  const $ = id => document.getElementById(id);
-  let supabaseClient = null;
-  let selectedLocation = null;
-  let selectedPhoto = null;
-  let previewUrl = null;
-
-  function showMessage(id, message, type = "info") {
-    const el = $(id);
-    if (!el) return;
-    el.textContent = message;
-    el.className = "result " + type;
-    el.style.display = "block";
+function showMessage(id, message, type = "info") {
+  const el = $(id);
+  if (!el) return;
+  el.textContent = message;
+  el.className = "result " + type;
+  el.style.display = "block";
+}
+function clearMessage(id) {
+  const el = $(id);
+  if (!el) return;
+  el.textContent = "";
+  el.className = "result";
+  el.style.display = "none";
+}
+function setBusy(button, busy, busyText, normalText) {
+  button.disabled = busy;
+  button.textContent = busy ? busyText : normalText;
+}
+function friendlyError(error, fallback) {
+  // Do not expose database internals, SQL, policy names or raw server messages.
+  if (error) console.error("[VEYORA]", error);
+  return fallback;
+}
+function makeTrackingId() {
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  const bytes = new Uint8Array(8);
+  crypto.getRandomValues(bytes);
+  return "VEY-" + Array.from(bytes, b => chars[b % chars.length]).join("");
+}
+function initNavigation() {
+  const toggle = $("menuToggle"), nav = $("navLinks");
+  toggle.addEventListener("click", () => {
+    const open = nav.classList.toggle("open");
+    toggle.setAttribute("aria-expanded", String(open));
+    toggle.setAttribute("aria-label", open ? "Close navigation menu" : "Open navigation menu");
+    toggle.textContent = open ? "×" : "☰";
+  });
+  nav.querySelectorAll("a").forEach(link => link.addEventListener("click", () => {
+    nav.classList.remove("open");
+    toggle.setAttribute("aria-expanded", "false");
+    toggle.setAttribute("aria-label", "Open navigation menu");
+    toggle.textContent = "☰";
+  }));
+}
+async function refreshAccount() {
+  if (!supabaseClient) return;
+  const { data, error } = await supabaseClient.auth.getSession();
+  if (error) {
+    showMessage("accountMessage", "Could not check your sign-in status. Please refresh and try again.", "error");
+    console.error("[VEYORA auth session]", error);
+    return;
   }
-
-  function clearMessage(id) {
-    const el = $(id);
-    if (el) {
-      el.textContent = "";
-      el.className = "result";
-      el.style.display = "none";
-    }
-  }
-
-  function setBusy(button, busy, busyText, normalText) {
-    button.disabled = busy;
-    button.textContent = busy ? busyText : normalText;
-  }
-
-  function makeTrackingId() {
-    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-    const bytes = new Uint8Array(8);
-    crypto.getRandomValues(bytes);
-    return "VEY-" + Array.from(bytes, b => chars[b % chars.length]).join("");
-  }
-
-  function initNavigation() {
-    const toggle = $("menuToggle");
-    const nav = $("navLinks");
-    toggle.addEventListener("click", () => {
-      const open = nav.classList.toggle("open");
-      toggle.setAttribute("aria-expanded", String(open));
-      toggle.setAttribute("aria-label", open ? "Close navigation menu" : "Open navigation menu");
-      toggle.textContent = open ? "×" : "☰";
-    });
-    nav.querySelectorAll("a").forEach(link => link.addEventListener("click", () => {
-      nav.classList.remove("open");
-      toggle.setAttribute("aria-expanded", "false");
-      toggle.setAttribute("aria-label", "Open navigation menu");
-      toggle.textContent = "☰";
-    }));
-  }
-
-  async function refreshAccount() {
-    if (!supabaseClient) return;
-    const { data, error } = await supabaseClient.auth.getSession();
-    if (error) {
-      showMessage("accountMessage", error.message, "error");
+  const user = data.session?.user || null;
+  $("loggedOut").classList.toggle("hidden", !!user);
+  $("loggedIn").classList.toggle("hidden", !user);
+  $("welcome").textContent = user ? "Signed in as " + user.email : "";
+}
+function initAuth() {
+  $("signupButton").addEventListener("click", async () => {
+    clearMessage("accountMessage");
+    const email = $("email").value.trim();
+    const password = $("password").value;
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || password.length < 8) {
+      showMessage("accountMessage", "Enter a valid email and a password of at least 8 characters.", "error");
       return;
     }
-    const user = data.session?.user || null;
-    $("loggedOut").classList.toggle("hidden", !!user);
-    $("loggedIn").classList.toggle("hidden", !user);
-    $("welcome").textContent = user ? "Signed in as " + user.email : "";
-  }
+    const button = $("signupButton");
+    setBusy(button, true, "Creating account…", "Create account");
+    try {
+      const { data, error } = await supabaseClient.auth.signUp({ email, password });
+      if (error) throw error;
+      showMessage("accountMessage", data.session
+        ? "Your account is ready and you are signed in."
+        : "Account created. Check your email if confirmation is enabled, then sign in.", "success");
+      await refreshAccount();
+    } catch (error) {
+      friendlyError(error, "Could not create your account. Check your details and try again.");
+      showMessage("accountMessage", "Could not create your account. Check your details and try again.", "error");
+    } finally {
+      setBusy(button, false, "Creating account…", "Create account");
+    }
+  });
+  $("loginButton").addEventListener("click", async () => {
+    clearMessage("accountMessage");
+    const email = $("email").value.trim(), password = $("password").value;
+    if (!email || !password) {
+      showMessage("accountMessage", "Enter your email and password.", "error");
+      return;
+    }
+    const button = $("loginButton");
+    setBusy(button, true, "Signing in…", "Sign in");
+    try {
+      const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      showMessage("accountMessage", "You are signed in successfully.", "success");
+      await refreshAccount();
+    } catch (error) {
+      friendlyError(error, "Sign in failed.");
+      showMessage("accountMessage", "Sign in failed. Check your email and password.", "error");
+    } finally {
+      setBusy(button, false, "Signing in…", "Sign in");
+    }
+  });
+  $("logoutButton").addEventListener("click", async () => {
+    const { error } = await supabaseClient.auth.signOut();
+    if (error) {
+      friendlyError(error, "Sign out failed.");
+      showMessage("accountMessage", "Sign out failed. Please try again.", "error");
+    } else {
+      showMessage("accountMessage", "You have signed out.", "success");
+      await refreshAccount();
+    }
+  });
+  supabaseClient.auth.onAuthStateChange(() => {
+    // Do not await Supabase operations inside this callback.
+    window.setTimeout(() => refreshAccount(), 0);
+  });
+  refreshAccount();
+}
+function initPhotoPreview() {
+  $("photo").addEventListener("change", event => {
+    const file = event.target.files?.[0] || null;
+    selectedPhoto = null;
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    previewUrl = null;
+    $("preview").style.display = "none";
+    $("preview").removeAttribute("src");
+    clearMessage("reportResult");
+    if (!file) return;
+    const allowed = ["image/jpeg", "image/png", "image/webp"];
+    if (!allowed.includes(file.type)) {
+      showMessage("reportResult", "Choose a JPG, PNG or WEBP image.", "error");
+      event.target.value = "";
+      return;
+    }
+    if (file.size > 1500000) {
+      showMessage("reportResult", "Your image is larger than 1.5 MB. Choose a smaller image.", "error");
+      event.target.value = "";
+      return;
+    }
+    selectedPhoto = file;
+    previewUrl = URL.createObjectURL(file);
+    $("preview").src = previewUrl;
+    $("preview").style.display = "block";
+  });
+}
+function initLocation() {
+  $("locationButton").addEventListener("click", () => {
+    if (!navigator.geolocation) {
+      showMessage("reportResult", "Location is not supported. Enter the address manually.", "error");
+      return;
+    }
+    const button = $("locationButton");
+    button.disabled = true;
+    $("locationText").textContent = "Requesting location permission…";
+    navigator.geolocation.getCurrentPosition(position => {
+      selectedLocation = { lat: position.coords.latitude, lon: position.coords.longitude };
+      const { lat, lon } = selectedLocation;
+      $("locationText").textContent = "Location selected: " + lat.toFixed(5) + ", " + lon.toFixed(5);
+      $("mapMessage").textContent = "Selected coordinates: " + lat.toFixed(5) + ", " + lon.toFixed(5);
+      const bbox = [lon - .01, lat - .01, lon + .01, lat + .01].join("%2C");
+      $("mapFrame").src = "https://www.openstreetmap.org/export/embed.html?bbox=" + bbox +
+        "&layer=mapnik&marker=" + encodeURIComponent(lat + "," + lon);
+      $("mapFrame").classList.remove("hidden");
+      $("mapMessage").classList.add("hidden");
+      button.disabled = false;
+    }, () => {
+      $("locationText").textContent = "Location permission unavailable. You can enter the address manually.";
+      button.disabled = false;
+    }, { enableHighAccuracy: false, timeout: 12000, maximumAge: 60000 });
+  });
+}
+async function initReportForm() {
+  $("reportForm").addEventListener("submit", async event => {
+    event.preventDefault();
+    clearMessage("reportResult");
+    if (!supabaseClient) {
+      showMessage("reportResult", "Reporting service is unavailable. Refresh and try again.", "error");
+      return;
+    }
+    const name = $("person").value.trim();
+    const phone = $("mobile").value.trim();
+    const category = $("category").value;
+    const address = $("address").value.trim();
+    const description = $("description").value.trim();
 
-  function initAuth() {
-    $("signupButton").addEventListener("click", async () => {
-      const email = $("email").value.trim();
-      const password = $("password").value;
-      if (!email || password.length < 6) {
-        showMessage("accountMessage", "Enter a valid email and a password of at least 6 characters.", "error");
-        return;
+    if (name.length < 2 || !/^[0-9]{10}$/.test(phone) || !category ||
+        address.length < 2 || description.length < 5) {
+      showMessage("reportResult", "Please check all required fields and enter a valid 10-digit mobile number.", "error");
+      return;
+    }
+    if (selectedPhoto && (!["image/jpeg","image/png","image/webp"].includes(selectedPhoto.type) ||
+        selectedPhoto.size > 1500000)) {
+      showMessage("reportResult", "Choose a JPG, PNG or WEBP image under 1.5 MB.", "error");
+      return;
+    }
+    const button = $("submitButton");
+    setBusy(button, true, "Submitting your report…", "Submit complaint →");
+    let uploadedFilePath = null;
+    try {
+      const trackingId = makeTrackingId();
+      let imageUrl = null;
+      if (selectedPhoto) {
+        const extension = selectedPhoto.type === "image/png" ? "png" :
+          selectedPhoto.type === "image/webp" ? "webp" : "jpg";
+        uploadedFilePath = trackingId + "/" + crypto.randomUUID() + "." + extension;
+        const { error: uploadError } = await supabaseClient.storage
+          .from("report-photos")
+          .upload(uploadedFilePath, selectedPhoto, {
+            contentType: selectedPhoto.type,
+            upsert: false
+          });
+        if (uploadError) throw uploadError;
+        const { data } = supabaseClient.storage.from("report-photos").getPublicUrl(uploadedFilePath);
+        imageUrl = data.publicUrl;
       }
-      const button = $("signupButton");
-      setBusy(button, true, "Creating account…", "Create account");
-      try {
-        const { data, error } = await supabaseClient.auth.signUp({ email, password });
-        if (error) throw error;
-        showMessage("accountMessage", data.session
-          ? "Your account is ready and you are signed in."
-          : "Account created. Check your email if confirmation is enabled, then sign in.", "success");
-        await refreshAccount();
-      } catch (error) {
-        showMessage("accountMessage", error.message || "Could not create your account.", "error");
-      } finally {
-        setBusy(button, false, "Creating account…", "Create account");
-      }
-    });
+      const gpsText = selectedLocation
+        ? "GPS: " + selectedLocation.lat.toFixed(6) + ", " + selectedLocation.lon.toFixed(6)
+        : "";
+      const report = {
+        tracking_id: trackingId,
+        name,
+        phone,
+        category,
+        description,
+        issue: category + ": " + description,
+        location: [address, gpsText].filter(Boolean).join(" | "),
+        image_url: imageUrl,
+        status: "Submitted"
+      };
+      const { error: insertError } = await supabaseClient.from("reports").insert([report]);
+      if (insertError) throw insertError;
 
-    $("loginButton").addEventListener("click", async () => {
-      const email = $("email").value.trim();
-      const password = $("password").value;
-      if (!email || !password) {
-        showMessage("accountMessage", "Enter your email and password.", "error");
-        return;
-      }
-      const button = $("loginButton");
-      setBusy(button, true, "Signing in…", "Sign in");
-      try {
-        const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
-        if (error) throw error;
-        showMessage("accountMessage", "You are signed in successfully.", "success");
-        await refreshAccount();
-      } catch (error) {
-        showMessage("accountMessage", error.message || "Sign in failed.", "error");
-      } finally {
-        setBusy(button, false, "Signing in…", "Sign in");
-      }
-    });
-
-    $("logoutButton").addEventListener("click", async () => {
-      const { error } = await supabaseClient.auth.signOut();
-      if (error) showMessage("accountMessage", error.message, "error");
-      else {
-        showMessage("accountMessage", "You have signed out.", "success");
-        await refreshAccount();
-      }
-    });
-
-    supabaseClient.auth.onAuthStateChange(() => {
-      // Avoid awaiting Supabase work inside its auth callback.
-      window.setTimeout(refreshAccount, 0);
-    });
-    refreshAccount();
-  }
-
-  function initPhotoPreview() {
-    $("photo").addEventListener("change", event => {
-      const file = event.target.files && event.target.files[0];
+      // The photo now belongs to a successfully saved report. Do not delete it.
+      uploadedFilePath = null;
+      showMessage("reportResult", "Complaint submitted successfully. Your tracking ID is " +
+        trackingId + ". Save this ID to check the status later.", "success");
+      $("trackingId").value = trackingId;
+      $("reportForm").reset();
       selectedPhoto = null;
+      selectedLocation = null;
       if (previewUrl) URL.revokeObjectURL(previewUrl);
       previewUrl = null;
-      $("preview").style.display = "none";
       $("preview").removeAttribute("src");
-      if (!file) return;
-
-      const allowed = ["image/jpeg", "image/png", "image/webp"];
-      if (!allowed.includes(file.type)) {
-        showMessage("reportResult", "Choose a JPG, PNG or WEBP image.", "error");
-        event.target.value = "";
-        return;
+      $("preview").style.display = "none";
+      $("locationText").textContent = "GPS is optional. You can enter the address manually.";
+      $("mapFrame").classList.add("hidden");
+      $("mapFrame").removeAttribute("src");
+      $("mapMessage").textContent = "📍 No GPS location selected yet.";
+      $("mapMessage").classList.remove("hidden");
+    } catch (error) {
+      friendlyError(error, "Your report could not be submitted.");
+      // Best-effort cleanup if upload succeeded but database insert failed.
+      if (uploadedFilePath) {
+        const { error: cleanupError } = await supabaseClient.storage
+          .from("report-photos").remove([uploadedFilePath]);
+        if (cleanupError) console.error("[VEYORA photo cleanup]", cleanupError);
       }
-      if (file.size > 1500000) {
-        showMessage("reportResult", "Your image is larger than 1.5 MB. Choose a smaller image.", "error");
-        event.target.value = "";
-        return;
-      }
-      selectedPhoto = file;
-      previewUrl = URL.createObjectURL(file);
-      $("preview").src = previewUrl;
-      $("preview").style.display = "block";
-      clearMessage("reportResult");
-    });
-  }
-
-  function initLocation() {
-    $("locationButton").addEventListener("click", () => {
-      if (!navigator.geolocation) {
-        showMessage("reportResult", "Location is not supported by this browser. Enter the address manually.", "error");
-        return;
-      }
-      const button = $("locationButton");
-      button.disabled = true;
-      $("locationText").textContent = "Requesting location permission…";
-
-      navigator.geolocation.getCurrentPosition(position => {
-        selectedLocation = {
-          lat: position.coords.latitude,
-          lon: position.coords.longitude
-        };
-        const { lat, lon } = selectedLocation;
-        $("locationText").textContent = "Location selected: " + lat.toFixed(5) + ", " + lon.toFixed(5);
-        $("mapMessage").textContent = "Selected coordinates: " + lat.toFixed(5) + ", " + lon.toFixed(5);
-        const bbox = [lon - .01, lat - .01, lon + .01, lat + .01].join("%2C");
-        $("mapFrame").src = "https://www.openstreetmap.org/export/embed.html?bbox=" + bbox + "&layer=mapnik&marker=" + encodeURIComponent(lat + "," + lon);
-        $("mapFrame").classList.remove("hidden");
-        $("mapMessage").classList.add("hidden");
-        button.disabled = false;
-      }, () => {
-        $("locationText").textContent = "Location permission was not available. You can enter the address manually.";
-        button.disabled = false;
-      }, { enableHighAccuracy: false, timeout: 12000, maximumAge: 60000 });
-    });
-  }
-
-  async function initReportForm() {
-    $("reportForm").addEventListener("submit", async event => {
-      event.preventDefault();
-      clearMessage("reportResult");
-
-      const name = $("person").value.trim();
-      const phone = $("mobile").value.trim();
-      const category = $("category").value;
-      const address = $("address").value.trim();
-      const description = $("description").value.trim();
-
-      if (name.length < 2 || !/^[0-9]{10}$/.test(phone) || !category || address.length < 2 || description.length < 5) {
-        showMessage("reportResult", "Please check all required fields and enter a valid 10-digit mobile number.", "error");
-        return;
-      }
-      if (selectedPhoto && selectedPhoto.size > 1500000) {
-        showMessage("reportResult", "The selected image is too large. Choose an image under 1.5 MB.", "error");
-        return;
-      }
-
-      const button = $("submitButton");
-      setBusy(button, true, "Submitting your report…", "Submit complaint →");
-
-      try {
-        const trackingId = makeTrackingId();
-        let imageUrl = null;
-
-        if (selectedPhoto) {
-          const extension = selectedPhoto.type === "image/png" ? "png" :
-            selectedPhoto.type === "image/webp" ? "webp" : "jpg";
-          const filePath = trackingId + "/" + crypto.randomUUID() + "." + extension;
-          const { error: uploadError } = await supabaseClient.storage
-            .from("report-photos")
-            .upload(filePath, selectedPhoto, { contentType: selectedPhoto.type, upsert: false });
-          if (uploadError) throw new Error("Photo upload failed: " + uploadError.message);
-
-          const { data } = supabaseClient.storage.from("report-photos").getPublicUrl(filePath);
-          imageUrl = data.publicUrl;
-        }
-
-        const gpsText = selectedLocation
-          ? "GPS: " + selectedLocation.lat + ", " + selectedLocation.lon
-          : "";
-        const report = {
-          tracking_id: trackingId,
-          name: name,
-          phone: phone,
-          category: category,
-          description: description,
-          issue: category + ": " + description,
-          location: [address, gpsText].filter(Boolean).join(" | "),
-          image_url: imageUrl,
-          status: "Submitted"
-        };
-
-        const { error } = await supabaseClient.from("reports").insert([report]);
-        if (error) throw error;
-
-        showMessage("reportResult", "Complaint submitted successfully. Your tracking ID is " + trackingId + ". Save this ID to check the status later.", "success");
-        $("trackingId").value = trackingId;
-        $("reportForm").reset();
-        selectedPhoto = null;
-        selectedLocation = null;
-        if (previewUrl) URL.revokeObjectURL(previewUrl);
-        previewUrl = null;
-        $("preview").removeAttribute("src");
-        $("preview").style.display = "none";
-        $("locationText").textContent = "GPS is optional. You can enter the address manually.";
-        $("mapFrame").classList.add("hidden");
-        $("mapFrame").removeAttribute("src");
-        $("mapMessage").textContent = "📍 No GPS location selected yet.";
-        $("mapMessage").classList.remove("hidden");
-      } catch (error) {
-        showMessage("reportResult", error.message || "Your report could not be submitted. Please try again.", "error");
-      } finally {
-        setBusy(button, false, "Submitting your report…", "Submit complaint →");
-      }
-    });
-  }
-
-  function initTracking() {
-    $("trackButton").addEventListener("click", async () => {
-      const id = $("trackingId").value.trim().toUpperCase();
-      if (!/^VEY-[A-Z0-9]{8}$/.test(id)) {
-        showMessage("trackingResult", "Enter a valid tracking ID, for example VEY-AB23CD45.", "error");
-        return;
-      }
-      const button = $("trackButton");
-      setBusy(button, true, "Checking status…", "Check status →");
-      try {
-        const { data, error } = await supabaseClient.rpc("track_report", { p_tracking_id: id });
-        if (error) throw error;
-        const report = Array.isArray(data) ? data[0] : data;
-        const box = $("trackingResult");
-        box.replaceChildren();
-
-        if (!report) {
-          showMessage("trackingResult", "No complaint was found for that ID. Check the ID and try again.", "error");
-          return;
-        }
-
-        const wrap = document.createElement("div");
-        wrap.className = "track-result";
-        const heading = document.createElement("h4");
-        heading.textContent = "Report " + (report.tracking_id || id);
-        const category = document.createElement("p");
-        category.textContent = "Category: " + (report.category || "Not available");
-        const location = document.createElement("p");
-        location.textContent = "Location: " + (report.location || "Not available");
-        const statusLine = document.createElement("p");
-        statusLine.textContent = "Current status: ";
-        const badge = document.createElement("span");
-        badge.className = "status";
-        const statusText = String(report.status || "Submitted");
-        badge.textContent = statusText;
-        if (statusText.toLowerCase() === "resolved") badge.classList.add("resolved");
-        else if (statusText.toLowerCase() === "in progress") badge.classList.add("progress");
-        else badge.classList.add("submitted");
-        statusLine.appendChild(badge);
-        wrap.append(heading, category, location, statusLine);
-
-        if (report.created_at) {
-          const date = document.createElement("p");
-          const parsedDate = new Date(report.created_at);
-          date.textContent = "Submitted: " + (Number.isNaN(parsedDate.getTime()) ? "Date unavailable" : parsedDate.toLocaleString());
-          wrap.appendChild(date);
-        }
-        box.appendChild(wrap);
-        box.className = "result success";
-        box.style.display = "block";
-      } catch (error) {
-        showMessage("trackingResult", error.message || "Could not retrieve the complaint status.", "error");
-      } finally {
-        setBusy(button, false, "Checking status…", "Check status →");
-      }
-    });
-    $("trackingId").addEventListener("keydown", event => {
-      if (event.key === "Enter") $("trackButton").click();
-    });
-  }
-
-  function initReveal() {
-    const items = document.querySelectorAll(".feature-card,.step,.section-head,.form-card,.about-band");
-    if (!("IntersectionObserver" in window) || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      items.forEach(item => item.classList.add("visible"));
+      showMessage("reportResult", "Your report could not be submitted. Please check your connection and try again.", "error");
+    } finally {
+      setBusy(button, false, "Submitting your report…", "Submit complaint →");
+    }
+  });
+}
+function initTracking() {
+  $("trackButton").addEventListener("click", async () => {
+    clearMessage("trackingResult");
+    if (!supabaseClient) {
+      showMessage("trackingResult", "Tracking service is unavailable. Refresh and try again.", "error");
       return;
     }
-    items.forEach(item => item.classList.add("reveal"));
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          entry.target.classList.add("visible");
-          observer.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.08 });
-    items.forEach(item => observer.observe(item));
-  }
-
-  function initApp() {
-    initNavigation();
-    initPhotoPreview();
-    initLocation();
-    initReveal();
-
-    if (!window.supabase || !window.supabase.createClient) {
-      showMessage("accountMessage", "The account service could not load. Check your internet connection and refresh the page.", "error");
-      showMessage("reportResult", "The reporting service could not load. Please refresh the page and try again.", "error");
+    const id = $("trackingId").value.trim().toUpperCase();
+    if (!/^VEY-[A-Z0-9]{8}$/.test(id)) {
+      showMessage("trackingResult", "Enter a valid tracking ID, for example VEY-AB23CD45.", "error");
       return;
     }
-
+    const button = $("trackButton");
+    setBusy(button, true, "Checking status…", "Check status →");
+    try {
+      const { data, error } = await supabaseClient.rpc("track_report", { p_tracking_id: id });
+      if (error) throw error;
+      const report = Array.isArray(data) ? data[0] : data;
+      const box = $("trackingResult");
+      box.replaceChildren();
+      if (!report) {
+        showMessage("trackingResult", "No complaint was found for that ID. Check the ID and try again.", "error");
+        return;
+      }
+      // Only render the limited fields returned by the track_report RPC.
+      const wrap = document.createElement("div");
+      wrap.className = "track-result";
+      const heading = document.createElement("h4");
+      heading.textContent = "Report " + String(report.tracking_id || id);
+      const category = document.createElement("p");
+      category.textContent = "Category: " + String(report.category || "Not available");
+      const location = document.createElement("p");
+      location.textContent = "Location: " + String(report.location || "Not available");
+      const statusLine = document.createElement("p");
+      statusLine.textContent = "Current status: ";
+      const badge = document.createElement("span");
+      const statusText = String(report.status || "Submitted");
+      badge.className = "status";
+      badge.textContent = statusText;
+      if (statusText.toLowerCase() === "resolved") badge.classList.add("resolved");
+      else if (statusText.toLowerCase() === "in progress") badge.classList.add("progress");
+      statusLine.appendChild(badge);
+      wrap.append(heading, category, location, statusLine);
+      if (report.created_at) {
+        const date = document.createElement("p");
+        const parsedDate = new Date(report.created_at);
+        date.textContent = "Submitted: " + (Number.isNaN(parsedDate.getTime())
+          ? "Date unavailable" : parsedDate.toLocaleString());
+        wrap.appendChild(date);
+      }
+      box.appendChild(wrap);
+      box.className = "result success";
+      box.style.display = "block";
+    } catch (error) {
+      friendlyError(error, "Could not retrieve the complaint status.");
+      showMessage("trackingResult", "Could not retrieve the complaint status. Please try again.", "error");
+    } finally {
+      setBusy(button, false, "Checking status…", "Check status →");
+    }
+  });
+  $("trackingId").addEventListener("keydown", event => {
+    if (event.key === "Enter") $("trackButton").click();
+  });
+}
+function initApp() {
+  initNavigation();
+  initPhotoPreview();
+  initLocation();
+  if (!window.supabase?.createClient) {
+    showMessage("accountMessage", "Account service could not load. Check your internet connection and refresh.", "error");
+    showMessage("reportResult", "Reporting service could not load. Check your internet connection and refresh.", "error");
+    return;
+  }
+  try {
     supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     initAuth();
     initReportForm();
     initTracking();
+  } catch (error) {
+    friendlyError(error, "App initialization failed.");
+    showMessage("accountMessage", "The app could not start. Please refresh the page.", "error");
+    showMessage("reportResult", "The app could not start. Please refresh the page.", "error");
   }
-
-  document.addEventListener("DOMContentLoaded", initApp);
-  </script>
+}
+document.addEventListener("DOMContentLoaded", initApp);
+</script>
 </body>
 </html>
